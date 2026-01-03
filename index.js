@@ -33,6 +33,11 @@ app.post('/send-push', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('🚀 Push backend corriendo en puerto 3000');
+app.get('/', (req, res) => {
+  res.send('Backend OK');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('Push backend corriendo en puerto', PORT);
 });
