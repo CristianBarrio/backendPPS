@@ -16,6 +16,25 @@ admin.initializeApp({
   ),
 });
 
+async function getTokensByRole(role) {
+  const snapshot = await admin
+    .firestore()
+    .collection('usuarios')
+    .where('tipo', '==', role)
+    .get();
+
+  const tokens = [];
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.token && typeof data.token === 'string') {
+      tokens.push(data.token);
+    }
+  });
+
+  return tokens;
+}
+
 // Endpoint para enviar push
 app.post('/notify', async (req, res) => {
   const { token, title, body } = req.body;
