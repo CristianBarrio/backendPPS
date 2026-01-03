@@ -17,7 +17,7 @@ admin.initializeApp({
 });
 
 // Endpoint para enviar push
-app.post('/send-push', async (req, res) => {
+app.post('/notify', async (req, res) => {
   const { token, title, body } = req.body;
 
   try {
@@ -30,6 +30,28 @@ app.post('/send-push', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error enviando push' });
+  }
+});
+
+app.post('/notify-role', async (req, res) => {
+  const { role, title, body } = req.body;
+
+  try {
+    const tokens = await getTokensByRole(role);
+
+    if (!tokens.length) {
+      return res.status(404).json({ error: 'No hay tokens para ese rol' });
+    }
+
+    await admin.messaging().sendEachForMulticast({
+      tokens,
+      notification: { title, body },
+    });
+
+    res.json({ ok: true, enviados: tokens.length });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error enviando push por rol' });
   }
 });
 
